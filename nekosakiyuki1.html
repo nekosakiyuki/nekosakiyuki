@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>照顧貓崎雪</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css">
+</head>
+  <style>
+    html, body {
+      margin: 0; padding: 0; height: 100%;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #pet-container {
+      width: 450px;
+      max-height: 760px;
+      padding: 10px;
+      background-image: url('https://i.postimg.cc/fW2cfqqw/room-nobody-background-solid-color-6958f02a-8703-442b-b258-5bb3ab9e5966.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      position: relative;
+      overflow-y: auto;
+      color: #222;
+      box-sizing: border-box;
+<img id="rolling-cat" src="https://media.tenor.com/x2dtLa1zBQ0AAAAj/%E8%B2%93%E8%B2%93-%E8%B2%93%E5%92%AA.gif" alt="打滾的貓" />
+
+}
+
+
+    #clock {
+      position: absolute;
+      font-weight: bold;         /* 加粗 */
+      box-shadow: 0 0 5px rgba(0,0,0,0.1); /* 微陰影 */
+      top: 10px; left: 15px;
+      font-size: 13px;
+      color: #555;
+      text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+    }
+    h1 {
+      font-size: 18px;
+      text-align: center;
+      margin-top: 20px;
+      margin-bottom: 0px;
+      text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+      position: relative;
+      top: -10px;
+    }
+
+    #mood-bubble {
+      position: absolute;
+      top: 45px; right: 15px;
+      background-color: rgba(255, 249, 196, 0.9);
+      padding: 8px 12px;
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      font-size: 14px;
+      display: none;
+      max-width: 60%;
+      z-index: 10;
+    }
+    #status {
+      margin-top: 15px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 10px;
+      padding: 12px 15px;
+      color: #222;
+position: relative;
+  top: -10px; /* 向上偏移 10px */
+    }
+    #status p, #status .status-label {
+      font-size: 12px;
+      margin: 4px 0;
+    }
+    .status-label {
+      font-weight: bold;
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .status-bar {
+      background-color: #ccc;
+      border-radius: 5px;
+      height: 8px;
+      margin-top: 3px;
+      overflow: hidden;
+    }
+    .status-fill {
+      height: 100%;
+      border-radius: 5px;
+      width: 0;
+      transition: width 0.3s ease;
+    }
+    #hunger-bar { background-color: #ff7043; }
+    #thirst-bar { background-color: #26c6da; }
+    #energy-bar { background-color: #42a5f5; }
+    #exp-bar { background-color: #66bb6a; }
+
+    /* 把等級和金幣放一起，背景色改灰色淡淡 */
+    #level-coins {
+      margin-top: 10px;
+      font-weight: bold;         /* 加粗 */
+      box-shadow: 0 0 5px rgba(0,0,0,0.1), inset 0 0 5px #ccc; /* 微陰影 */
+      background: #f0f0f0;
+      border-radius: 10px;
+      padding: 10px 15px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #222;
+    }
+
+    #actions {
+      margin-top: 15px;
+      text-align: center;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    button {
+      margin: 4px;
+      padding: 5px 10px;
+      font-size: 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #000;
+      min-width: 80px;
+      user-select: none;
+      transition: background-color 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    #play-btn { background-color: #4CAF50; }
+    #feed-btn { background-color: #ff9800; }
+    #clean-btn { background-color: #2196F3; }
+    #drink-btn { background-color: #00acc1; }
+    #sleep-btn { background-color: #a668d3; }
+    #coin-btn { background-color: #99dd6e; color: #333; }
+    #buy-coin-btn { background-color: #fe9882; color: #000; }  
+    #message {
+      margin-top: 12px;
+      font-weight: bold;
+      text-align: center;      
+      min-height: 10px;
+      color: #333;
+      font-size: 13px;
+      text-shadow: 1px 1px 2px #fff;
+    }
+
+#next-restore-times {
+  font-size: 10px;           /* 放大字體 */
+  color: #333;               /* 變成深灰色更清晰 */
+  font-weight: bold;         /* 加粗 */
+  background-color: rgba(255, 255, 255, 0.7); /* 淡白底 */
+  padding: 8px 12px;         /* 內距 */
+  border-radius: 8px;        /* 圓角 */
+  margin-top: 12px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1); /* 微陰影 */
+  text-align: center;
+}
+
+.inner-content {
+  width: 380px;         /* 固定寬度 */
+  margin: 0 auto;       /* 置中 */
+}
+
+#dataArea {
+  font-size: 12px;
+  width: 50%;
+  height: 100px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 8px;
+  resize: vertical;
+}
+
+#backup-area {
+  margin-top: 1px;
+  display: flex;           /* 水平排列 */
+  gap: 1px;               /* 按鈕之間的距離 */
+  align-items: center;     /* 垂直置中（防止不同高度出現錯位） */
+  justify-content: flex-start; /* 靠左對齊 */
+  flex-wrap: wrap;         /* 如果畫面太小可以自動換行 */
+}
+
+#backup-area button {
+  padding: 5px 10px;
+  font-size: 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #7ecfff;
+  color: #222;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: background-color 0.2s ease;
+}
+
+#backup-area button:hover {
+  background-color: #52b8f6;
+}
+
+#rolling-cat {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  display: none;
+  z-index: 20;
+  animation: rollIn 0.8s ease-out;
+}
+
+@keyframes rollIn {
+  from {
+    transform: translateX(-50%) scale(0.8) rotate(-30deg);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+
+  </style>
+</head>
+
+
+<body>
+  <div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v23.0"></script>
+
+  <div id="pet-container">
+  <div class="inner-content">
+    <div id="clock"></div>
+    <h1>小雪遭霸凌經過</h1>
+  <div style="margin-top: -5px;">
+    <iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fnekosaki.yuki%2Fposts%2Fpfbid0Jty2G5ZMtmoBtzqXpYNWqMEdAYi3DuNhvwPbVYJz7pLsRTh2mMhwvUzrV6A7gebFl&width=380&show_text=true&height=582&appId" width="380" height="250" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
+
+
+    <div id="mood-bubble"></div>
+    <div id="status">
+      <p>名字: <span id="pet-name">小雪</span></p>
+      <p>心情: <span id="mood">開心</span></p>
+      <div class="status-label">飢餓度 <span id="hunger-text">50/100</span></div>
+      <div class="status-bar"><div class="status-fill" id="hunger-bar"></div></div>
+      <div class="status-label">口渴值 <span id="thirst-text">40/100</span></div>
+      <div class="status-bar"><div class="status-fill" id="thirst-bar"></div></div>
+      <div class="status-label">活力 <span id="energy-text">70/100</span></div>
+      <div class="status-bar"><div class="status-fill" id="energy-bar"></div></div>
+      <div class="status-label">經驗值 <span id="exp-text">0/100</span></div>
+      <div class="status-bar"><div class="status-fill" id="exp-bar"></div></div>
+
+
+      <!-- 等級和金幣合併區 -->
+      <div id="level-coins">
+        <span>等級: <span id="level">1</span></span>
+          <span>金幣: <span id="coins">100</span></span>
+        </div>
+
+    <div id="next-restore-times">
+      下一次恢復：玩耍 <span id="next-play">--</span>，
+      清潔 <span id="next-clean">--</span>，
+      喝水 <span id="next-drink">--</span>
+    </div>
+
+<!-- 改為兩組區塊，每個按鈕連 panel -->
+<div class="accordion-row">
+  <div class="accordion-block left">
+    <button class="accordion">遊戲說明</button>
+  <div class="panel">
+    <p>這是一個可以和小雪互動，給牠餵食、清潔、玩耍，並讓她恢復活力。每個行動都會影響小雪的心情、飢餓度、口渴度和活力。</p>
+    <p>請注意，某些行為有次數限制，每隔一段時間會自動恢復。</p>
+    <p>請好好照顧小雪！</p>
+  </div>
+</div>
+
+  <div class="accordion-block right">
+    <button class="accordion">注意事項</button>
+  <div class="panel">
+  <p>以下行為可能會導致遊戲資料被清除，請小心操作：</p>
+    <p>🚫 清除瀏覽器的 Cookie 或網頁儲存空間</p>
+    <p>🚫 使用無痕模式（關閉瀏覽器後資料會遺失）</p>
+    <p>🚫 更換裝置或瀏覽器未做資料備份</p>
+    <p>🚫 瀏覽器設定為自動清除網站資料</p>
+    <p>🚫 刪除瀏覽器的「重置網站資料」或「清除快取」</p>
+  <p>✅ 建議：</p>
+    <p>✔️ 定期備份</p>
+    <p>✔️ 避免使用無痕視窗玩遊戲</p>
+    <p>✔️ 使用同一台裝置和瀏覽器進行遊戲</p>
+  </div>
+ </div>
+</div>
+
+
+    <div id="actions">
+      <button id="play-btn">玩耍 (<span id="play-count">5</span>)</button>
+      <button id="feed-btn">餵食 (10金幣)</button>
+      <button id="clean-btn">清潔 (<span id="clean-count">3</span>)</button>
+      <button id="drink-btn">喝水 (<span id="drink-count">5</span>)</button>
+      <button id="sleep-btn">睡覺</button>
+      <button id="coin-btn">每日金幣+50</button>
+      <button id="buy-coin-btn">送雪罐罐</button>
+<div id="backup-area">
+  <button id="backup-btn">🔁備份資料</button>
+  <input type="file" id="import-file" accept=".json" style="display: none;">
+  <button id="import-btn">📥匯入資料</button>
+     </div>
+</div>
+  <p id="message"></p>
+
+
+<!-- 摺疊按鈕的 CSS 和 JavaScript -->
+<style>
+.accordion-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1px;
+}
+
+  .accordion {
+    display: inline-block;  /* ✅ 讓它只佔自身寬度 */
+    background: linear-gradient(145deg, #ed9dd0, #f6cee8); /* 漸變色 */
+    color: #333;
+    cursor: pointer;
+    padding: 5px 10px;  /* ↓ 變小的關鍵 */
+    width: auto;       /* 讓寬度依內容自動調整 */
+    border: none;
+    border-radius: 7px;
+    text-align: left;
+    outline: none;
+    font-size: 12px;               /* ↓ 字體變小 */
+    font-weight: 600;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 1px 2x; /* 讓按鈕之間留一點距離 */
+  }
+
+
+    /* 活動狀態和懸停狀態 */
+  .accordion.active,
+  .accordion:hover {
+    background: linear-gradient(145deg, #9edceb, #70cce1);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.7);
+    transform: translateY(-1px);
+}
+
+  /* 摺疊內容 */
+  .panel {
+    padding: 15px;
+    display: none;
+    overflow: hidden;
+    background-color: rgba(244, 246, 252, 0.2);
+    border-left: 4px solid #70cce1;
+    border-radius: 8px;
+    margin-top: 10px;
+    text-align: left;
+  }
+</style>
+
+<script>
+  const acc = document.getElementsByClassName("accordion");
+  for (let i = 0; i < acc.length; i++) {
+    acc[i].addEventListener("click", function () {
+      this.classList.toggle("active");
+      const panel = this.nextElementSibling;
+      if (panel && panel.classList.contains("panel")) {
+        panel.style.display = panel.style.display === "block" ? "none" : "block";
+      }
+    });
+  }
+</script>
+  </div>
+
+<script>
+  // 定義你要備份的所有 Key（可依實際需求擴充）
+  const backupKeys = [
+    "coins",
+    "hunger",
+    "mood",
+    "energy",
+    "thirst",
+    "playCount",
+    "cleanCount",
+    "drinkCount",
+    "lastCoinTime",
+    "otherGameData" // 加入你有用的 key
+  ];
+
+  // 備份功能
+  document.getElementById("backup-btn").addEventListener("click", () => {
+    const data = {};
+
+    backupKeys.forEach((key) => {
+      const value = localStorage.getItem(key);
+      if (value !== null) {
+        data[key] = value;
+      }
+    });
+
+    if (Object.keys(data).length === 0) {
+      alert("❌ 沒有可備份的資料！");
+      return;
+    }
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "game_backup_all.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // 匯入按鈕開啟檔案選擇器
+  document.getElementById("import-btn").addEventListener("click", () => {
+    document.getElementById("import-file").click();
+  });
+
+  // 匯入功能
+  document.getElementById("import-file").addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      try {
+        const json = JSON.parse(e.target.result);
+        let count = 0;
+
+        for (const key in json) {
+          localStorage.setItem(key, json[key]);
+          count++;
+        }
+
+        alert(`✅ 匯入完成，總共寫入 ${count} 筆資料！`);
+        location.reload();
+      } catch (err) {
+        alert("❌ 匯入失敗，請確認是有效的 JSON 備份檔。");
+      }
+    };
+
+    reader.readAsText(file);
+  });
+</script>
+
+
+    <script>
+  const pet = {
+    name: "小雪",
+    mood: "開心",
+    hunger: 50,
+    thirst: 40,
+    energy: 70,
+    exp: 0,
+    level: 1,
+    coins: 0,
+    playCount: 5,
+    cleanCount: 3,
+    drinkCount: 5,
+    moods: ["開心", "無聊", "生氣", "疲倦", "興奮", "休息中"]
+  };
+
+  const moodDialogues = {
+    "開心": ["今天的你看起來不錯喵～", "小雪心情很好喵～"],
+    "無聊": ["陪我玩嘛～", "我們來玩球球？"],
+    "生氣": ["哼！餓了啦！", "給我罐罐啦，不然小雪要生氣喔！"],
+    "疲倦": ["小雪困了，想睡覺。", "小雪想躺平..."],
+    "興奮": ["今天感覺超棒！", "我要抱抱！"],
+    "休息中": ["Zzz... 躺床床最棒了～"]
+  };
+
+  
+  function requiredExp(level) {
+    return 100 + (level - 1) * 50;
+  }
+
+  function gainExp(amount) {
+    pet.exp += amount;
+    while (pet.exp >= requiredExp(pet.level)) {
+      pet.exp -= requiredExp(pet.level);
+      pet.level++;
+      showMessage(`${pet.name} 升級啦！現在是等級 ${pet.level}！`);
+    }
+    savePetData();
+  }
+
+  function showBubble(text) {
+    const bubble = document.getElementById('mood-bubble');
+    bubble.textContent = text;
+    bubble.style.display = "block";
+    setTimeout(() => {
+      bubble.style.display = "none";
+    }, 2500);
+  }
+
+  function showMessage(msg) {
+    const message = document.getElementById("message");
+    message.textContent = msg;
+    setTimeout(() => {
+      if (message.textContent === msg) message.textContent = "";
+    }, 3000);
+  }
+
+  function updateStatus() {
+    document.getElementById("pet-name").textContent = pet.name;
+    document.getElementById("mood").textContent = pet.mood;
+    document.getElementById("hunger-text").textContent = `${pet.hunger}/100`;
+    document.getElementById("thirst-text").textContent = `${pet.thirst}/100`;
+    document.getElementById("energy-text").textContent = `${pet.energy}/100`;
+    document.getElementById("exp-text").textContent = `${pet.exp}/${requiredExp(pet.level)}`;
+    document.getElementById("level").textContent = pet.level;
+    document.getElementById("coins").textContent = pet.coins;
+    document.getElementById("play-count").textContent = pet.playCount;
+    document.getElementById("clean-count").textContent = pet.cleanCount;
+    document.getElementById("drink-count").textContent = pet.drinkCount;
+
+    document.getElementById("hunger-bar").style.width = `${pet.hunger}%`;
+    document.getElementById("thirst-bar").style.width = `${pet.thirst}%`;
+    document.getElementById("energy-bar").style.width = `${pet.energy}%`;
+    document.getElementById("exp-bar").style.width = `${(pet.exp / requiredExp(pet.level)) * 100}%`;
+
+    savePetData();
+  }
+
+   //顯示時間
+  function updateClock() {
+    const clock = document.getElementById('clock');
+    const now = new Date();
+    clock.textContent = now.toLocaleTimeString();
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // 單位常數
+const MINUTE = 60 * 1000;
+const HOUR = 60 * MINUTE;
+
+const restoreIntervals = {
+  play: 1 * HOUR,      // 每 1 小時可恢復一次玩耍次數
+  clean: 2 * HOUR,     // 每 2 小時可恢復一次清潔次數
+  drink: 30 * MINUTE   // 每 30 分鐘可恢復一次喝水次數
+};
+function formatTime(seconds) {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+
+  if (h > 0) {
+    return `${h}小時 ${m}分`;
+  } else if (m > 0) {
+    return `${m}分鐘`;
+  } else {
+    return `${s}秒`;
+  }
+}
+
+
+  let lastPlayRestore = Date.now();
+  let lastCleanRestore = Date.now();
+  let lastDrinkRestore = Date.now();
+
+  // 讀取寵物資料與恢復時間
+  function loadPetData() {
+    const data = localStorage.getItem('petData');
+    if (data) {
+      const saved = JSON.parse(data);
+      Object.assign(pet, saved);
+    }
+    lastPlayRestore = Number(localStorage.getItem('lastPlayRestore')) || Date.now();
+    lastCleanRestore = Number(localStorage.getItem('lastCleanRestore')) || Date.now();
+    lastDrinkRestore = Number(localStorage.getItem('lastDrinkRestore')) || Date.now();
+  }
+
+  // 儲存寵物資料與恢復時間
+  function savePetData() {
+    localStorage.setItem('petData', JSON.stringify(pet));
+    localStorage.setItem('lastPlayRestore', lastPlayRestore);
+    localStorage.setItem('lastCleanRestore', lastCleanRestore);
+    localStorage.setItem('lastDrinkRestore', lastDrinkRestore);
+  }
+
+  function updateNextRestoreTimes() {
+  const now = Date.now();
+  const nextPlay = Math.max(0, Math.ceil((restoreIntervals.play - (now - lastPlayRestore)) / 1000));
+  const nextClean = Math.max(0, Math.ceil((restoreIntervals.clean - (now - lastCleanRestore)) / 1000));
+  const nextDrink = Math.max(0, Math.ceil((restoreIntervals.drink - (now - lastDrinkRestore)) / 1000));
+
+  document.getElementById('next-play').textContent = nextPlay > 0 ? formatTime(nextPlay) : '可用';
+  document.getElementById('next-clean').textContent = nextClean > 0 ? formatTime(nextClean) : '可用';
+  document.getElementById('next-drink').textContent = nextDrink > 0 ? formatTime(nextDrink) : '可用';
+}
+
+
+  setInterval(() => {
+    const now = Date.now();
+
+    if (pet.playCount < 5 && now - lastPlayRestore >= restoreIntervals.play) {
+      pet.playCount++;
+      lastPlayRestore = now;
+    }
+    if (pet.cleanCount < 3 && now - lastCleanRestore >= restoreIntervals.clean) {
+      pet.cleanCount++;
+      lastCleanRestore = now;
+    }
+    if (pet.drinkCount < 5 && now - lastDrinkRestore >= restoreIntervals.drink) {
+      pet.drinkCount++;
+      lastDrinkRestore = now;
+    }
+    updateNextRestoreTimes();
+    updateStatus();
+  }, 1000);
+
+  function formatTime(seconds) {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+
+  let result = '';
+  if (h > 0) result += `${h}小時 `;
+  if (m > 0 || h > 0) result += `${m}分 `;
+  result += `${s}秒`;
+
+  return result.trim(); // 去除多餘空白
+}
+
+  function canClaimDailyCoins() {
+    const lastClaimDate = localStorage.getItem('lastClaimCoinsDate');
+    const todayStr = new Date().toISOString().slice(0, 10);
+    return lastClaimDate !== todayStr;
+  }
+
+  function claimDailyCoins() {
+    if (canClaimDailyCoins()) {
+      pet.coins += 50;
+      showMessage("獲得50金幣！");
+      localStorage.setItem('lastClaimCoinsDate', new Date().toISOString().slice(0, 10));
+      updateStatus();
+    } else {
+      alert("今天已經領過金幣囉，請明天再來！");
+    }
+  }
+
+  document.getElementById("coin-btn").addEventListener("click", claimDailyCoins);
+
+  document.getElementById("play-btn").addEventListener("click", () => {
+    if (pet.playCount <= 0) {
+      alert("玩耍次數不足，請稍後恢復！");
+      return;
+    }
+    pet.playCount--;
+    pet.mood = "興奮";
+    pet.energy = Math.max(0, pet.energy - 10);
+    pet.hunger = Math.min(100, pet.hunger + 10);
+    pet.thirst = Math.min(100, pet.thirst + 10);
+    gainExp(10);
+    showBubble("一起玩球球～");
+    updateStatus();
+  });
+
+  document.getElementById("feed-btn").addEventListener("click", () => {
+  if (pet.coins >= 10) {
+    pet.coins -= 10;
+    pet.hunger = Math.max(0, pet.hunger - 30);
+    gainExp(10);
+    showBubble("謝謝餵食，好飽喵！");
+  } else {
+    alert("❌ 金幣不足，無法餵食小雪！");
+  }
+  updateStatus();
+});
+
+  document.getElementById("clean-btn").addEventListener("click", () => {
+    if (pet.cleanCount <= 0) {
+      alert("清潔次數不足，請稍後恢復！");
+      return;
+    }
+    pet.cleanCount--;
+    pet.mood = "開心";
+    pet.energy = Math.min(100, pet.energy + 10);
+    gainExp(10);
+    showBubble("清潔完爽爽的！");
+    updateStatus();
+  });
+
+  document.getElementById("drink-btn").addEventListener("click", () => {
+    if (pet.drinkCount <= 0) {
+      alert("喝水次數不足，請稍後恢復！");
+      return;
+    }
+    pet.drinkCount--;
+    pet.thirst = Math.max(0, pet.thirst - 30);
+    pet.energy = Math.min(100, pet.energy + 5);
+    gainExp(8);
+    showBubble("喝水好舒服！");
+    updateStatus();
+  });
+
+  let sleepCooldown = false;
+  document.getElementById("sleep-btn").addEventListener("click", () => {
+    if (sleepCooldown) {
+      alert("小雪正在睡覺，10分鐘後再來找她吧！");
+      return;
+    }
+    pet.energy = 100;
+    pet.mood = "休息中";
+    showBubble("睡飽飽精神好！");
+    gainExp(15);
+    updateStatus();
+
+    sleepCooldown = true;
+    setTimeout(() => {
+      sleepCooldown = false;
+      pet.mood = "開心";
+      updateStatus();
+      showMessage("小雪醒來啦！");
+    }, 600000);
+  });
+
+function showRollingCat() {
+  const cat = document.getElementById("rolling-cat");
+  cat.style.display = "block";
+  setTimeout(() => {
+    cat.style.display = "none";
+  }, 4000); // 4 秒後隱藏
+}
+
+
+  document.getElementById("play-btn").addEventListener("click", () => {
+      if (pet.playCount > 0) {
+        pet.playCount--;
+        showRollingCat();
+        pet.mood = pet.moods[Math.floor(Math.random() * pet.moods.length)];
+        gainExp(10);
+        showBubble(moodDialogues[pet.mood][Math.floor(Math.random() * moodDialogues[pet.mood].length)]);
+        updateStatus();
+      } else {
+        showMessage("小雪今天玩得太多了，休息一下吧！");
+      }
+    });
+
+    document.getElementById("clean-btn").addEventListener("click", () => {
+      if (pet.cleanCount > 0) {
+        pet.cleanCount--;
+        showMessage("小雪變得更乾净了！");
+        updateStatus();
+      } else {
+        showMessage("小雪需要休息，等一下再清潔！");
+      }
+    });
+
+    document.getElementById("drink-btn").addEventListener("click", () => {
+      if (pet.drinkCount > 0) {
+        pet.drinkCount--;
+        pet.thirst = 100;
+        showMessage("小雪喝水後變得好多了！");
+        updateStatus();
+      } else {
+        showMessage("小雪今天喝水太多了，休息一下吧！");
+      }
+    });
+
+    document.getElementById("buy-coin-btn").addEventListener("click", () => {
+  // 彈出提示框詢問用戶是否確定購買金幣
+  const isConfirmed = confirm("你願意送小雪一份罐罐嗎？作為感謝，小雪會送你30金幣喵！");
+
+
+  if (isConfirmed) {
+    pet.coins += 30;
+    showMessage("謝謝你的罐罐，小雪送你30金幣喵！");
+    updateStatus();
+    window.open("https://deerdonate.herokuapp.com/donation/%E8%B2%93%E5%B4%8E%E9%9B%AA", "_blank");
+  } else {
+    showMessage("也沒關係，小雪還是愛你喵～");
+  }
+});
+
+  loadPetData();
+  updateStatus();
+  updateNextRestoreTimes();
+  </script>
+</body>
+</html>
